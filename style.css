@@ -35,3 +35,28 @@ button {
 .selected {
   outline: 2px solid #333;
 }
+
+/*download to PDF*/
+@media print {
+  body {
+    background: white;
+  }
+
+  button,
+  #intro,
+  #quiz,
+  #loginSection,
+  #adminPanel {
+    display: none !important;
+  }
+
+  #results {
+    display: block !important;
+  }
+
+  .container {
+    box-shadow: none;
+    margin: 0;
+    max-width: 100%;
+  }
+}
