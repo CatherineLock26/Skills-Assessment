@@ -1,5 +1,6 @@
 const questions = [
   {
+    id:1,
     category: "Digital Communication",
     question: "How confident are you using email, Teams, or Zoom professionally?",
     answers: [
@@ -10,6 +11,7 @@ const questions = [
     ]
   },
   {
+    id:2,
     category: "Productivity Tools",
     question: "How well can you use spreadsheets such as Excel or Google Sheets?",
     answers: [
