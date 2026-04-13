@@ -1,11 +1,11 @@
-//variables
+// Variables
 let currentQuestionIndex = 0;
 let selectedScore = null;
 let totalScore = 0;
 let userName = "";
 let categoryScores = {};
 
-//html elements
+// HTML elements
 const intro = document.getElementById("intro");
 const quiz = document.getElementById("quiz");
 const results = document.getElementById("results");
@@ -13,6 +13,9 @@ const results = document.getElementById("results");
 const startBtn = document.getElementById("startBtn");
 const nextBtn = document.getElementById("nextBtn");
 const restartBtn = document.getElementById("restartBtn");
+const clearSavedBtn = document.getElementById("clearSavedBtn");
+const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+const viewAdminBtn = document.getElementById("viewAdminBtn");
 
 const questionText = document.getElementById("questionText");
 const answersDiv = document.getElementById("answers");
@@ -23,27 +26,27 @@ const scoreText = document.getElementById("scoreText");
 const categoryBreakdown = document.getElementById("categoryBreakdown");
 const recommendations = document.getElementById("recommendations");
 
-//adding local storage
-const clearSavedBtn = document.getElementById("clearSavedBtn");
-
-//download to PDF
-const downloadPdfBtn = document.getElementById("downloadPdfBtn");
-
-//Admin Dashboard
-const viewAdminBtn = document.getElementById("viewAdminBtn");
 const adminPanel = document.getElementById("adminPanel");
 const adminSummary = document.getElementById("adminSummary");
 const resultsTable = document.getElementById("resultsTable");
 
-//start assessment
+// Start assessment
 startBtn.addEventListener("click", () => {
   userName = document.getElementById("userName").value.trim() || "User";
+  currentQuestionIndex = 0;
+  selectedScore = null;
+  totalScore = 0;
+  categoryScores = {};
+
   intro.classList.add("hidden");
+  results.classList.add("hidden");
+  adminPanel.classList.add("hidden");
   quiz.classList.remove("hidden");
+
   showQuestion();
 });
 
- //show question
+// Show question
 function showQuestion() {
   selectedScore = null;
   nextBtn.disabled = true;
@@ -53,13 +56,16 @@ function showQuestion() {
   questionText.textContent = currentQuestion.question;
   answersDiv.innerHTML = "";
 
-  currentQuestion.answers.forEach(answer => {
+  currentQuestion.answers.forEach((answer) => {
     const button = document.createElement("button");
     button.classList.add("answer-btn");
     button.textContent = answer.text;
 
     button.addEventListener("click", () => {
-      document.querySelectorAll(".answer-btn").forEach(btn => btn.classList.remove("selected"));
+      document.querySelectorAll(".answer-btn").forEach((btn) => {
+        btn.classList.remove("selected");
+      });
+
       button.classList.add("selected");
       selectedScore = answer.score;
       nextBtn.disabled = false;
@@ -69,7 +75,7 @@ function showQuestion() {
   });
 }
 
-//save answers and move on
+// Save answers and move on
 nextBtn.addEventListener("click", () => {
   const currentQuestion = questions[currentQuestionIndex];
   totalScore += selectedScore;
@@ -77,8 +83,8 @@ nextBtn.addEventListener("click", () => {
   if (!categoryScores[currentQuestion.category]) {
     categoryScores[currentQuestion.category] = 0;
   }
-  categoryScores[currentQuestion.category] += selectedScore;
 
+  categoryScores[currentQuestion.category] += selectedScore;
   currentQuestionIndex++;
 
   if (currentQuestionIndex < questions.length) {
@@ -88,7 +94,7 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
-//calculate level
+// Calculate level
 function getLevel(score) {
   if (score <= 15) return "Beginner";
   if (score <= 30) return "Developing";
@@ -96,44 +102,7 @@ function getLevel(score) {
   return "Advanced";
 }
 
-//show results
-function showResults() {
-  quiz.classList.add("hidden");
-  results.classList.remove("hidden");
-
-  const level = getLevel(totalScore);
-
-  resultTitle.textContent = `${userName}, your digital skills level is: ${level}`;
-  scoreText.textContent = `Total score: ${totalScore} out of 60`;
-
-  categoryBreakdown.innerHTML = "<h3>Category Breakdown</h3>";
-  for (const category in categoryScores) {
-    const p = document.createElement("p");
-    p.textContent = `${category}: ${categoryScores[category]}`;
-    categoryBreakdown.appendChild(p);
-  }
-
-  recommendations.innerHTML = `<h3>Recommendations</h3><p>${getRecommendation(level)}</p>`;
-  
-//adding local storage
-  const resultData = {
-  userName,
-  totalScore,
-  level,
-  categoryScores,
-  completedAt: new Date().toISOString()
-};
-
- localStorage.setItem("latestAssessmentResult", JSON.stringify(resultData)); 
-  
-  //admin Dashboard
-  const existingResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
-  existingResults.push(resultData);
-  localStorage.setItem("allAssessmentResults", JSON.stringify(existingResults));
-
-}
-
-//recommendations 
+// Recommendations
 function getRecommendation(level) {
   if (level === "Beginner") {
     return "Focus on core digital skills such as email, online collaboration, file management, and safe internet use.";
@@ -147,7 +116,45 @@ function getRecommendation(level) {
   return "You are operating at an advanced level. Consider leadership, mentoring, and digital strategy development opportunities.";
 }
 
-//restart logic
+// Show results
+function showResults() {
+  quiz.classList.add("hidden");
+  results.classList.remove("hidden");
+
+  const level = getLevel(totalScore);
+  const maxScore = questions.length * 3;
+
+  resultTitle.textContent = `${userName}, your digital skills level is: ${level}`;
+  scoreText.textContent = `Total score: ${totalScore} out of ${maxScore}`;
+
+  categoryBreakdown.innerHTML = "<h3>Category Breakdown</h3>";
+  for (const category in categoryScores) {
+    const p = document.createElement("p");
+    p.textContent = `${category}: ${categoryScores[category]}`;
+    categoryBreakdown.appendChild(p);
+  }
+
+  recommendations.innerHTML = `<h3>Recommendations</h3><p>${getRecommendation(level)}</p>`;
+
+  const resultData = {
+    userName,
+    totalScore,
+    level,
+    categoryScores,
+    completedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("latestAssessmentResult", JSON.stringify(resultData));
+
+  const existingResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  existingResults.push(resultData);
+  localStorage.setItem("allAssessmentResults", JSON.stringify(existingResults));
+
+  console.log("Saved latest result:", resultData);
+  console.log("All saved results:", JSON.parse(localStorage.getItem("allAssessmentResults")));
+}
+
+// Restart
 restartBtn.addEventListener("click", () => {
   currentQuestionIndex = 0;
   selectedScore = null;
@@ -155,48 +162,39 @@ restartBtn.addEventListener("click", () => {
   categoryScores = {};
 
   results.classList.add("hidden");
+  adminPanel.classList.add("hidden");
   intro.classList.remove("hidden");
 });
 
-//Clear button
+// Clear saved result
 clearSavedBtn.addEventListener("click", () => {
   localStorage.removeItem("latestAssessmentResult");
-  alert("Saved result cleared.");
+  alert("Latest saved result cleared.");
 });
 
-//page-load check
-document.addEventListener("DOMContentLoaded", () => {
-  const savedResult = localStorage.getItem("latestAssessmentResult");
-  const savedQuestions = localStorage.getItem("questionsData");
-
-  if (savedResult) {
-    const parsed = JSON.parse(savedResult);
-    console.log("Saved result found:", parsed);
-  }
-
-  if(savedQuestions){
-    questions = JSON.parse(savedQuestions);
-  }
-});
-
-//download to PDF
+// Download to PDF
 downloadPdfBtn.addEventListener("click", () => {
   window.print();
 });
 
-//admin dashboard
+// View admin dashboard
 viewAdminBtn.addEventListener("click", () => {
-  const results = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  const savedResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
   adminPanel.classList.remove("hidden");
 
-  const averageScore = results.length
-    ? (results.reduce((sum, r) => sum + r.totalScore, 0) / results.length).toFixed(1)
+  const averageScore = savedResults.length
+    ? (savedResults.reduce((sum, r) => sum + r.totalScore, 0) / savedResults.length).toFixed(1)
     : 0;
 
   adminSummary.innerHTML = `
-    <p>Total assessments completed: ${results.length}</p>
+    <p>Total assessments completed: ${savedResults.length}</p>
     <p>Average score: ${averageScore}</p>
   `;
+
+  if (savedResults.length === 0) {
+    resultsTable.innerHTML = "<p>No saved results yet.</p>";
+    return;
+  }
 
   let html = `
     <table>
@@ -211,7 +209,7 @@ viewAdminBtn.addEventListener("click", () => {
       <tbody>
   `;
 
-  results.forEach(result => {
+  savedResults.forEach((result) => {
     html += `
       <tr>
         <td>${result.userName}</td>
@@ -222,53 +220,18 @@ viewAdminBtn.addEventListener("click", () => {
     `;
   });
 
-  html += `</tbody></table>`;
+  html += `
+      </tbody>
+    </table>
+  `;
+
   resultsTable.innerHTML = html;
 });
 
-function renderQuestions(){
-  const list = document.getElementById("questionList");
-  list.inner="";
-
-  questions.forEach(q =>{
-    const div = document.createElement("div");
-    div.innerHTML="
-      <p>${q.question}</p>
-      <button onclick="editQuestion(${q.id})">Edit</button>
-      <button onclick="deleteQuestion(${q.id})">Delete</button>
-    ";
-    list.appendChild(div);
+// Page-load check
+document.addEventListener("DOMContentLoaded", () => {
+  const savedResult = localStorage.getItem("latestAssessmentResult");
+  if (savedResult) {
+    console.log("Saved result found:", JSON.parse(savedResult));
+  }
 });
-
-localStorage.setItem("questionsData", JSON.stringify(questions)); 
-}
-
-function addQuestion(){
-  const newQ = (
-    id:Date.noew(),
-    category:"New Category",
-    question:"New question",
-    answers[]
-};
-questions.push(newQ);
-renderQuestions()
-}
-
-document.getElementById("addQuestionBtn").addEventListener("click", AddQuestion);
-
-function deleteQuestion(){
-  const index = questions.findIndex(q=>q.id===id);
-  if(index!==-1{
-    questions.splice(index,1);
-    renderQuestions();
-  }
-}
-
-function editQuestion(id){
-  const q = questions.find(q=> q.id===id);
-  const newText = prompt("Edit question:",q.question);
-  if(newText){
-    q.question = newText;
-    renderQuestions();
-  }
-}
