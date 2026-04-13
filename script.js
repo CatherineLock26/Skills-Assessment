@@ -23,6 +23,9 @@ const scoreText = document.getElementById("scoreText");
 const categoryBreakdown = document.getElementById("categoryBreakdown");
 const recommendations = document.getElementById("recommendations");
 
+//adding local storage
+const clearSavedBtn = document.getElementById("clearSavedBtn");
+
 //start assessment
 startBtn.addEventListener("click", () => {
   userName = document.getElementById("userName").value.trim() || "User";
@@ -102,6 +105,18 @@ function showResults() {
   }
 
   recommendations.innerHTML = `<h3>Recommendations</h3><p>${getRecommendation(level)}</p>`;
+  
+//adding local storage
+  const resultData = {
+  userName,
+  totalScore,
+  level,
+  categoryScores,
+  completedAt: new Date().toISOString()
+};
+
+ localStorage.setItem("latestAssessmentResult", JSON.stringify(resultData)); 
+
 }
 
 //recommendations 
@@ -128,3 +143,21 @@ restartBtn.addEventListener("click", () => {
   results.classList.add("hidden");
   intro.classList.remove("hidden");
 });
+
+//Clear button
+clearSavedBtn.addEventListener("click", () => {
+  localStorage.removeItem("latestAssessmentResult");
+  alert("Saved result cleared.");
+});
+
+//page-load check
+document.addEventListener("DOMContentLoaded", () => {
+  const savedResult = localStorage.getItem("latestAssessmentResult");
+
+  if (savedResult) {
+    const parsed = JSON.parse(savedResult);
+    console.log("Saved result found:", parsed);
+  }
+});
+
+
