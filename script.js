@@ -237,11 +237,11 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function renderQuestions(){
-  const list = document.getElemnetByID("quetsionsList");
+  const list = document.getElemnetByID("quetsionList");
   list.innerHTML="";
 
   questions.forEach(q=>{
-    const div = docment.createElement("div");
+    const div = document.createElement("div");
     div.innerHTML = "
       <p>${q.question}</p>
       <button onclick="editQuestion(${q.id})">Edit</button>
@@ -262,11 +262,11 @@ questions.push(newQ);
 renderQuestions();
 }
 
-document.getElementByID("addQuestionsBtn").addEventListener("click",addQuestion);
+document.getElementByID("addQuestionBtn").addEventListener("click",addQuestion);
 
 function deleteQuestion(id){
   const index = questions.findIndex(q=>q.id===id);
-  if(index!==1){
+  if(index!==-1){
     questions.splice(index, 1);
     renderQuestions();
   }
