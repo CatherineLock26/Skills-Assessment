@@ -14,6 +14,7 @@
       <p>Assess your digital skills and receive personalised recommendations.</p>
       <input type="text" id="userName" placeholder="Enter your name" />
       <button id="startBtn">Start Assessment</button>
+      <button id="viewAdminBtn" class="hidden">View Admin Dashboard</button> <!--Admin Dashboard-->
     </section>
 
     <section id="quiz" class="hidden">
@@ -32,6 +33,14 @@
       <button id="clearSavedBtn">Clear Saved Result</button> <!--adding local storage and clearing results-->
       <button id="downloadPdfBtn">Download Results as PDF</button> <!-- download to PDF -->
     </section>
+
+    <!--Admin Dashboard-->
+    <section id="adminPanel" class="hidden">
+    <h2>Admin Dashboard</h2>
+    <div id="adminSummary"></div>
+    <div id="resultsTable"></div>
+    </section>
+
   </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> <!--download to PDF-->
   <script src="questions.js"></script>
