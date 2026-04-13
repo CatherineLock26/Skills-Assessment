@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Skills Assessment Tool</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Digital Skills Assessment Tool</h1>
+
+    <section id="intro">
+      <p>Assess your digital skills and receive personalised recommendations.</p>
+      <input type="text" id="userName" placeholder="Enter your name" />
+      <button id="startBtn">Start Assessment</button>
+    </section>
+
+    <section id="quiz" class="hidden">
+      <div id="progress"></div>
+      <h2 id="questionText"></h2>
+      <div id="answers"></div>
+      <button id="nextBtn" disabled>Next</button>
+    </section>
+
+    <section id="results" class="hidden">
+      <h2 id="resultTitle"></h2>
+      <p id="scoreText"></p>
+      <div id="categoryBreakdown"></div>
+      <div id="recommendations"></div>
+      <button id="restartBtn">Start Again</button>
+    </section>
+  </div>
+
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
