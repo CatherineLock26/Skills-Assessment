@@ -277,6 +277,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedResult) {
     console.log("Saved result found:", JSON.parse(savedResult));
   }
+  const savedQuestions = localStorage.getItem("questionsData");
+  if (savedQuestions) {
+    questions = JSON.parse(savedQuestions);
+  }
+  renderQuestions();
+  
 });
 
 function renderQuestions() {
@@ -285,11 +291,21 @@ function renderQuestions() {
 
   questions.forEach((q) => {
     const div = document.createElement("div");
+    div.classList.add("question-item");
+
+    const answersHtml = q.answers
+      .map((answer) => `<li>${answer.text} (Score: ${answer.score})</li>`)
+      .join("");
+
     div.innerHTML = `
-      <p>${q.question}</p>
+      <p><strong>Category:</strong> ${q.category}</p>
+      <p><strong>Question:</strong> ${q.question}</p>
+      <ul>${answersHtml}</ul>
       <button onclick="editQuestion(${q.id})">Edit</button>
       <button onclick="deleteQuestion(${q.id})">Delete</button>
+      <hr>
     `;
+
     list.appendChild(div);
   });
 
@@ -297,11 +313,31 @@ function renderQuestions() {
 }
 
 function addQuestion() {
+  const category = prompt("Enter category:", "Digital Communication");
+  const questionText = prompt("Enter the question:", "New question");
+
+  const answer1Text = prompt("Enter answer 1 text:", "Option 1");
+  const answer1Score = Number(prompt("Enter answer 1 score:", "0"));
+
+  const answer2Text = prompt("Enter answer 2 text:", "Option 2");
+  const answer2Score = Number(prompt("Enter answer 2 score:", "1"));
+
+  const answer3Text = prompt("Enter answer 3 text:", "Option 3");
+  const answer3Score = Number(prompt("Enter answer 3 score:", "2"));
+
+  const answer4Text = prompt("Enter answer 4 text:", "Option 4");
+  const answer4Score = Number(prompt("Enter answer 4 score:", "3"));
+
   const newQ = {
     id: Date.now(),
-    category: "New Category",
-    question: "New question",
-    answers: []
+    category: category || "New Category",
+    question: questionText || "New question",
+    answers: [
+      { text: answer1Text || "Option 1", score: isNaN(answer1Score) ? 0 : answer1Score },
+      { text: answer2Text || "Option 2", score: isNaN(answer2Score) ? 1 : answer2Score },
+      { text: answer3Text || "Option 3", score: isNaN(answer3Score) ? 2 : answer3Score },
+      { text: answer4Text || "Option 4", score: isNaN(answer4Score) ? 3 : answer4Score }
+    ]
   };
 
   questions.push(newQ);
@@ -324,10 +360,29 @@ function editQuestion(id) {
 
   if (!q) return;
 
-  const newText = prompt("Edit question:", q.question);
+  const newCategory = prompt("Edit category:", q.category);
+  const newQuestionText = prompt("Edit question:", q.question);
 
-  if (newText) {
-    q.question = newText;
-    renderQuestions();
-  }
+  const newAnswer1Text = prompt("Edit answer 1 text:", q.answers[0]?.text || "");
+  const newAnswer1Score = Number(prompt("Edit answer 1 score:", q.answers[0]?.score ?? 0));
+
+  const newAnswer2Text = prompt("Edit answer 2 text:", q.answers[1]?.text || "");
+  const newAnswer2Score = Number(prompt("Edit answer 2 score:", q.answers[1]?.score ?? 1));
+
+  const newAnswer3Text = prompt("Edit answer 3 text:", q.answers[2]?.text || "");
+  const newAnswer3Score = Number(prompt("Edit answer 3 score:", q.answers[2]?.score ?? 2));
+
+  const newAnswer4Text = prompt("Edit answer 4 text:", q.answers[3]?.text || "");
+  const newAnswer4Score = Number(prompt("Edit answer 4 score:", q.answers[3]?.score ?? 3));
+
+  q.category = newCategory || q.category;
+  q.question = newQuestionText || q.question;
+  q.answers = [
+    { text: newAnswer1Text || q.answers[0]?.text || "Option 1", score: isNaN(newAnswer1Score) ? 0 : newAnswer1Score },
+    { text: newAnswer2Text || q.answers[1]?.text || "Option 2", score: isNaN(newAnswer2Score) ? 1 : newAnswer2Score },
+    { text: newAnswer3Text || q.answers[2]?.text || "Option 3", score: isNaN(newAnswer3Score) ? 2 : newAnswer3Score },
+    { text: newAnswer4Text || q.answers[3]?.text || "Option 4", score: isNaN(newAnswer4Score) ? 3 : newAnswer4Score }
+  ];
+
+  renderQuestions();
 }
