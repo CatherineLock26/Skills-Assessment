@@ -210,3 +210,14 @@ viewAdminBtn.addEventListener("click", () => {
     html += `
       <tr>
         <td>${result.userName}</td>
+                <td>${result.totalScore}</td>
+        <td>${result.level}</td>
+        <td>${new Date(result.completedAt).toLocaleString()}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+  resultsTable.innerHTML = html;
+});
+
