@@ -167,10 +167,15 @@ clearSavedBtn.addEventListener("click", () => {
 //page-load check
 document.addEventListener("DOMContentLoaded", () => {
   const savedResult = localStorage.getItem("latestAssessmentResult");
+  const savedQuestions = localStorage.getItem("questionsData");
 
   if (savedResult) {
     const parsed = JSON.parse(savedResult);
     console.log("Saved result found:", parsed);
+  }
+
+  if(savedQuestions){
+    questions = JSON.parse(savedQuestions);
   }
 });
 
@@ -234,6 +239,8 @@ function renderQuestions(){
     ";
     list.appendChild(div);
 });
+
+localStorage.setItem("questionsData", JSON.stringify(questions)); 
 }
 
 function addQuestion(){
@@ -253,6 +260,15 @@ function deleteQuestion(){
   const index = questions.findIndex(q=>q.id===id);
   if(index!==-1{
     questions.splice(index,1);
+    renderQuestions();
+  }
+}
+
+function editQuestion(id){
+  const q = questions.find(q=> q.id===id);
+  const newText = prompt("Edit question:",q.question);
+  if(newText){
+    q.question = newText;
     renderQuestions();
   }
 }
