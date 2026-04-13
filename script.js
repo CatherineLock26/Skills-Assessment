@@ -26,6 +26,9 @@ const recommendations = document.getElementById("recommendations");
 //adding local storage
 const clearSavedBtn = document.getElementById("clearSavedBtn");
 
+//download to PDF
+const downloadPdfBtn = document.getElementById("downloadPdfBtn");
+
 //start assessment
 startBtn.addEventListener("click", () => {
   userName = document.getElementById("userName").value.trim() || "User";
@@ -160,4 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-
+//download to PDF
+downloadPdfBtn.addEventListener("click", () => {
+  window.print();
+});
