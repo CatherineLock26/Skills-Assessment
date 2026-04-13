@@ -220,3 +220,39 @@ viewAdminBtn.addEventListener("click", () => {
   html += `</tbody></table>`;
   resultsTable.innerHTML = html;
 });
+
+function renderQuestions(){
+  const list = document.getElementById("questionList");
+  list.inner="";
+
+  questions.forEach(q =>{
+    const div = document.createElement("div");
+    div.innerHTML="
+      <p>${q.question}</p>
+      <button onclick="editQuestion(${q.id})">Edit</button>
+      <button onclick="deleteQuestion(${q.id})">Delete</button>
+    ";
+    list.appendChild(div);
+});
+}
+
+function addQuestion(){
+  const newQ = (
+    id:Date.noew(),
+    category:"New Category",
+    question:"New question",
+    answers[]
+};
+questions.push(newQ);
+renderQuestions()
+}
+
+document.getElementById("addQuestionBtn").addEventListener("click", AddQuestion);
+
+function deleteQuestion(){
+  const index = questions.findIndex(q=>q.id===id);
+  if(index!==-1{
+    questions.splice(index,1);
+    renderQuestions();
+  }
+}
