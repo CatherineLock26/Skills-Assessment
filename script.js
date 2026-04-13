@@ -127,14 +127,57 @@ function showResults() {
   resultTitle.textContent = `${userName}, your digital skills level is: ${level}`;
   scoreText.textContent = `Total score: ${totalScore} out of ${maxScore}`;
 
-  categoryBreakdown.innerHTML = "<h3>Category Breakdown</h3>";
-  for (const category in categoryScores) {
-    const p = document.createElement("p");
-    p.textContent = `${category}: ${categoryScores[category]}`;
-    categoryBreakdown.appendChild(p);
+viewAdminBtn.addEventListener("click", () => {
+  const savedResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  adminPanel.classList.remove("hidden");
+
+  const averageScore = savedResults.length
+    ? (savedResults.reduce((sum, r) => sum + r.totalScore, 0) / savedResults.length).toFixed(1)
+    : 0;
+
+  adminSummary.innerHTML = `
+    <p>Total assessments completed: ${savedResults.length}</p>
+    <p>Average score: ${averageScore}</p>
+  `;
+
+  if (savedResults.length === 0) {
+    resultsTable.innerHTML = "<p>No saved results yet.</p>";
+    return;
   }
 
-  recommendations.innerHTML = `<h3>Recommendations</h3><p>${getRecommendation(level)}</p>`;
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+          <th>Level</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  savedResults.forEach((result) => {
+    html += `
+      <tr>
+        <td>${result.userName}</td>
+        <td>${result.totalScore}</td>
+        <td>${result.level}</td>
+        <td>${new Date(result.completedAt).toLocaleString()}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  resultsTable.innerHTML = html;
+
+  renderQuestions();
+});
 
   const resultData = {
     userName,
@@ -236,49 +279,55 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-function renderQuestions(){
-  const list = document.getElemnetByID("quetsionList");
-  list.innerHTML="";
+function renderQuestions() {
+  const list = document.getElementById("questionList");
+  list.innerHTML = "";
 
-  questions.forEach(q=>{
+  questions.forEach((q) => {
     const div = document.createElement("div");
-    div.innerHTML = "
+    div.innerHTML = `
       <p>${q.question}</p>
       <button onclick="editQuestion(${q.id})">Edit</button>
       <button onclick="deleteQuestion(${q.id})">Delete</button>
-      ";
+    `;
     list.appendChild(div);
-});
+  });
+
+  localStorage.setItem("questionsData", JSON.stringify(questions));
 }
 
-function addQuestion(){
-  const newQ={
-    id:Date.now(),
-    category:"New Category",
-    question:"New question",
-    answer[]
-};
-questions.push(newQ);
-renderQuestions();
+function addQuestion() {
+  const newQ = {
+    id: Date.now(),
+    category: "New Category",
+    question: "New question",
+    answers: []
+  };
+
+  questions.push(newQ);
+  renderQuestions();
 }
 
-document.getElementByID("addQuestionBtn").addEventListener("click",addQuestion);
+document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
 
-function deleteQuestion(id){
-  const index = questions.findIndex(q=>q.id===id);
-  if(index!==-1){
+function deleteQuestion(id) {
+  const index = questions.findIndex((q) => q.id === id);
+
+  if (index !== -1) {
     questions.splice(index, 1);
     renderQuestions();
   }
 }
 
-function editQuestion(id){
-  const q = questions.find(q=>q.id===id);
+function editQuestion(id) {
+  const q = questions.find((q) => q.id === id);
+
+  if (!q) return;
+
   const newText = prompt("Edit question:", q.question);
-  if(newText){
+
+  if (newText) {
     q.question = newText;
     renderQuestions();
   }
 }
-
-
