@@ -29,6 +29,12 @@ const clearSavedBtn = document.getElementById("clearSavedBtn");
 //download to PDF
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
 
+//Admin Dashboard
+const viewAdminBtn = document.getElementById("viewAdminBtn");
+const adminPanel = document.getElementById("adminPanel");
+const adminSummary = document.getElementById("adminSummary");
+const resultsTable = document.getElementById("resultsTable");
+
 //start assessment
 startBtn.addEventListener("click", () => {
   userName = document.getElementById("userName").value.trim() || "User";
@@ -119,6 +125,11 @@ function showResults() {
 };
 
  localStorage.setItem("latestAssessmentResult", JSON.stringify(resultData)); 
+  
+  //admin Dashboard
+  const existingResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  existingResults.push(resultData);
+  localStorage.setItem("allAssessmentResults", JSON.stringify(existingResults));
 
 }
 
@@ -167,3 +178,35 @@ document.addEventListener("DOMContentLoaded", () => {
 downloadPdfBtn.addEventListener("click", () => {
   window.print();
 });
+
+//admin dashboard
+viewAdminBtn.addEventListener("click", () => {
+  const results = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  adminPanel.classList.remove("hidden");
+
+  const averageScore = results.length
+    ? (results.reduce((sum, r) => sum + r.totalScore, 0) / results.length).toFixed(1)
+    : 0;
+
+  adminSummary.innerHTML = `
+    <p>Total assessments completed: ${results.length}</p>
+    <p>Average score: ${averageScore}</p>
+  `;
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+          <th>Level</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  results.forEach(result => {
+    html += `
+      <tr>
+        <td>${result.userName}</td>
