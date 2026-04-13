@@ -235,3 +235,50 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Saved result found:", JSON.parse(savedResult));
   }
 });
+
+function renderQuestions(){
+  const list = document.getElemnetByID("quetsionsList");
+  list.innerHTML="";
+
+  questions.forEach(q=>{
+    const div = docment.createElement("div");
+    div.innerHTML = "
+      <p>${q.question}</p>
+      <button onclick="editQuestion(${q.id})">Edit</button>
+      <button onclick="deleteQuestion(${q.id})">Delete</button>
+      ";
+    list.appendChild(div);
+});
+}
+
+function addQuestion(){
+  const newQ={
+    id:Date.now(),
+    category:"New Category",
+    question:"New question",
+    answer[]
+};
+questions.push(newQ);
+renderQuestions();
+}
+
+document.getElementByID("addQuestionsBtn").addEventListener("click",addQuestion);
+
+function deleteQuestion(id){
+  const index = questions.findIndex(q=>q.id===id);
+  if(index!==1){
+    questions.splice(index, 1);
+    renderQuestions();
+  }
+}
+
+function editQuestion(id){
+  const q = questions.find(q=>q.id===id);
+  const newText = prompt("Edit question:", q.question);
+  if(newText){
+    q.question = newText;
+    renderQuestions();
+  }
+}
+
+
