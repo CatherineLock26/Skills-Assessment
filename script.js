@@ -46,6 +46,114 @@ startBtn.addEventListener("click", () => {
   showQuestion();
 });
 
+// Save answers and move on
+nextBtn.addEventListener("click", () => {
+  const currentQuestion = questions[currentQuestionIndex];
+  totalScore += selectedScore;
+
+  if (!categoryScores[currentQuestion.category]) {
+    categoryScores[currentQuestion.category] = 0;
+  }
+
+  categoryScores[currentQuestion.category] += selectedScore;
+  currentQuestionIndex++;
+
+  if (currentQuestionIndex < questions.length) {
+    showQuestion();
+  } else {
+    showResults();
+  }
+});
+
+
+// Restart
+restartBtn.addEventListener("click", () => {
+  currentQuestionIndex = 0;
+  selectedScore = null;
+  totalScore = 0;
+  categoryScores = {};
+
+  results.classList.add("hidden");
+  adminPanel.classList.add("hidden");
+  intro.classList.remove("hidden");
+});
+
+// Clear saved result
+clearSavedBtn.addEventListener("click", () => {
+  localStorage.removeItem("latestAssessmentResult");
+  alert("Latest saved result cleared.");
+});
+
+// Download to PDF
+downloadPdfBtn.addEventListener("click", () => {
+  window.print();
+});
+
+// View admin dashboard
+viewAdminBtn.addEventListener("click", () => {
+  const savedResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
+  adminPanel.classList.remove("hidden");
+
+  const averageScore = savedResults.length
+    ? (savedResults.reduce((sum, r) => sum + r.totalScore, 0) / savedResults.length).toFixed(1)
+    : 0;
+
+  adminSummary.innerHTML = `
+    <p>Total assessments completed: ${savedResults.length}</p>
+    <p>Average score: ${averageScore}</p>
+  `;
+
+  if (savedResults.length === 0) {
+    resultsTable.innerHTML = "<p>No saved results yet.</p>";
+    return;
+  }
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Score</th>
+          <th>Level</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  savedResults.forEach((result) => {
+    html += `
+      <tr>
+        <td>${result.userName}</td>
+        <td>${result.totalScore}</td>
+        <td>${result.level}</td>
+        <td>${new Date(result.completedAt).toLocaleString()}</td>
+      </tr>
+    `;
+  });
+
+  html += `
+      </tbody>
+    </table>
+  `;
+
+  resultsTable.innerHTML = html;
+});
+
+// Page-load check
+document.addEventListener("DOMContentLoaded", () => {
+  const savedResult = localStorage.getItem("latestAssessmentResult");
+  if (savedResult) {
+    console.log("Saved result found:", JSON.parse(savedResult));
+  }
+  const savedQuestions = localStorage.getItem("questionsData");
+  if (savedQuestions) {
+    questions = JSON.parse(savedQuestions);
+  }
+  renderQuestions();
+  
+});
+
 // Show question
 function showQuestion() {
   selectedScore = null;
@@ -74,25 +182,6 @@ function showQuestion() {
     answersDiv.appendChild(button);
   });
 }
-
-// Save answers and move on
-nextBtn.addEventListener("click", () => {
-  const currentQuestion = questions[currentQuestionIndex];
-  totalScore += selectedScore;
-
-  if (!categoryScores[currentQuestion.category]) {
-    categoryScores[currentQuestion.category] = 0;
-  }
-
-  categoryScores[currentQuestion.category] += selectedScore;
-  currentQuestionIndex++;
-
-  if (currentQuestionIndex < questions.length) {
-    showQuestion();
-  } else {
-    showResults();
-  }
-});
 
 // Calculate level
 function getLevel(score) {
@@ -197,93 +286,6 @@ viewAdminBtn.addEventListener("click", () => {
   console.log("All saved results:", JSON.parse(localStorage.getItem("allAssessmentResults")));
 }
 
-// Restart
-restartBtn.addEventListener("click", () => {
-  currentQuestionIndex = 0;
-  selectedScore = null;
-  totalScore = 0;
-  categoryScores = {};
-
-  results.classList.add("hidden");
-  adminPanel.classList.add("hidden");
-  intro.classList.remove("hidden");
-});
-
-// Clear saved result
-clearSavedBtn.addEventListener("click", () => {
-  localStorage.removeItem("latestAssessmentResult");
-  alert("Latest saved result cleared.");
-});
-
-// Download to PDF
-downloadPdfBtn.addEventListener("click", () => {
-  window.print();
-});
-
-// View admin dashboard
-viewAdminBtn.addEventListener("click", () => {
-  const savedResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
-  adminPanel.classList.remove("hidden");
-
-  const averageScore = savedResults.length
-    ? (savedResults.reduce((sum, r) => sum + r.totalScore, 0) / savedResults.length).toFixed(1)
-    : 0;
-
-  adminSummary.innerHTML = `
-    <p>Total assessments completed: ${savedResults.length}</p>
-    <p>Average score: ${averageScore}</p>
-  `;
-
-  if (savedResults.length === 0) {
-    resultsTable.innerHTML = "<p>No saved results yet.</p>";
-    return;
-  }
-
-  let html = `
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Score</th>
-          <th>Level</th>
-          <th>Date</th>
-        </tr>
-      </thead>
-      <tbody>
-  `;
-
-  savedResults.forEach((result) => {
-    html += `
-      <tr>
-        <td>${result.userName}</td>
-        <td>${result.totalScore}</td>
-        <td>${result.level}</td>
-        <td>${new Date(result.completedAt).toLocaleString()}</td>
-      </tr>
-    `;
-  });
-
-  html += `
-      </tbody>
-    </table>
-  `;
-
-  resultsTable.innerHTML = html;
-});
-
-// Page-load check
-document.addEventListener("DOMContentLoaded", () => {
-  const savedResult = localStorage.getItem("latestAssessmentResult");
-  if (savedResult) {
-    console.log("Saved result found:", JSON.parse(savedResult));
-  }
-  const savedQuestions = localStorage.getItem("questionsData");
-  if (savedQuestions) {
-    questions = JSON.parse(savedQuestions);
-  }
-  renderQuestions();
-  
-});
 
 function renderQuestions() {
   const list = document.getElementById("questionList");
