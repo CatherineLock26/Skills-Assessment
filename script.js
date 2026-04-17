@@ -40,7 +40,7 @@ startBtn.addEventListener("click", () => {
 
   intro.classList.add("hidden");
   results.classList.add("hidden");
-  adminPanel.classList.add("hidden");
+  //adminPanel.classList.add("hidden");
   quiz.classList.remove("hidden");
 
   showQuestion();
