@@ -30,6 +30,13 @@ const adminPanel = document.getElementById("adminPanel");
 const adminSummary = document.getElementById("adminSummary");
 const resultsTable = document.getElementById("resultsTable");
 
+document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+
+// Download to PDF
+downloadPdfBtn.addEventListener("click", () => {
+  window.print();
+});
+
 // Start assessment
 startBtn.addEventListener("click", () => {
   userName = document.getElementById("userName").value.trim() || "User";
@@ -65,7 +72,6 @@ nextBtn.addEventListener("click", () => {
   }
 });
 
-
 // Restart
 restartBtn.addEventListener("click", () => {
   currentQuestionIndex = 0;
@@ -84,10 +90,6 @@ clearSavedBtn.addEventListener("click", () => {
   alert("Latest saved result cleared.");
 });
 
-// Download to PDF
-downloadPdfBtn.addEventListener("click", () => {
-  window.print();
-});
 
 // View admin dashboard
 viewAdminBtn.addEventListener("click", () => {
@@ -346,7 +348,7 @@ function addQuestion() {
   renderQuestions();
 }
 
-document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+
 
 function deleteQuestion(id) {
   const index = questions.findIndex((q) => q.id === id);
