@@ -64,6 +64,26 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+//currently same as nextBtn
+  if (previousBtn) {
+    nextBtn.addEventListener("click", () => {
+      const currentQuestion = questions[currentQuestionIndex];
+      totalScore += selectedScore;
+
+      if (!categoryScores[currentQuestion.category]) {
+        categoryScores[currentQuestion.category] = 0;
+      }
+
+      categoryScores[currentQuestion.category] += selectedScore;
+      currentQuestionIndex++;
+
+      if (currentQuestionIndex < questions.length) {
+        showQuestion();
+      } else {
+        showResults();
+      }
+    });
+  }
 
   if (restartBtn) {
     restartBtn.addEventListener("click", () => {
