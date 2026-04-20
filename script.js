@@ -30,7 +30,7 @@ const adminPanel = document.getElementById("adminPanel");
 const adminSummary = document.getElementById("adminSummary");
 const resultsTable = document.getElementById("resultsTable");
 
-document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+
 
 // Download to PDF
 downloadPdfBtn.addEventListener("click", () => {

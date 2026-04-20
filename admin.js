@@ -30,6 +30,8 @@ const adminPanel = document.getElementById("adminPanel");
 const adminSummary = document.getElementById("adminSummary");
 const resultsTable = document.getElementById("resultsTable");
 
+document.getElementById("addQuestionBtn").addEventListener("click", addQuestion);
+
 // View admin dashboard
 viewAdminBtn.addEventListener("click", () => {
   const savedResults = JSON.parse(localStorage.getItem("allAssessmentResults")) || [];
