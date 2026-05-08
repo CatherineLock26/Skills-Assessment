@@ -1,0 +1,93 @@
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
+
+function usernameToEmail(username: string) {
+  return `${username.trim().toLowerCase()}@skills-assessment.local`;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+
+  try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    const { data: authData, error: authError } = await userClient.auth.getUser();
+    if (authError || !authData.user) throw new Error("Not authenticated");
+
+    const { data: profile, error: profileError } = await adminClient
+      .from("profiles")
+      .select("role,status")
+      .eq("id", authData.user.id)
+      .single();
+    if (profileError || profile?.role !== "admin" || profile?.status !== "active") {
+      throw new Error("Admin access required");
+    }
+
+    const body = await req.json();
+
+    async function createUser(user: any) {
+      if (!user.display_name || !user.username || !user.group_course || !user.password) {
+        throw new Error("display_name, username, group_course and password are required");
+      }
+      const email = usernameToEmail(user.username);
+      const { data, error } = await adminClient.auth.admin.createUser({
+        email,
+        password: user.password,
+        email_confirm: true,
+        user_metadata: { username: user.username }
+      });
+      if (error) throw error;
+
+      const { error: profileInsertError } = await adminClient.from("profiles").insert({
+        id: data.user.id,
+        username: user.username.trim().toLowerCase(),
+        display_name: user.display_name.trim(),
+        group_course: user.group_course.trim(),
+        role: user.role || "user",
+        status: user.status || "active",
+        must_reset_password: user.must_reset_password ?? true
+      });
+      if (profileInsertError) throw profileInsertError;
+      return data.user.id;
+    }
+
+    if (body.action === "create-user") {
+      const id = await createUser(body);
+      return Response.json({ ok: true, id }, { headers: corsHeaders });
+    }
+
+    if (body.action === "bulk-create-users") {
+      const created = [];
+      for (const user of body.users || []) created.push(await createUser(user));
+      return Response.json({ ok: true, created }, { headers: corsHeaders });
+    }
+
+    if (body.action === "set-password") {
+      const { error } = await adminClient.auth.admin.updateUserById(body.id, { password: body.password });
+      if (error) throw error;
+      await adminClient.from("profiles").update({ must_reset_password: body.must_reset_password ?? true }).eq("id", body.id);
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+
+    if (body.action === "delete-user") {
+      const { error } = await adminClient.auth.admin.deleteUser(body.id);
+      if (error) throw error;
+      return Response.json({ ok: true }, { headers: corsHeaders });
+    }
+
+    throw new Error("Unknown action");
+  } catch (error) {
+    return Response.json({ error: error.message }, { status: 400, headers: corsHeaders });
+  }
+});
