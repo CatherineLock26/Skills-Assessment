@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital Skills Assessment</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="topbar no-print">
+      <div>
+        <h1>Digital Skills Assessment Tool</h1>
+        <p>Log in, complete the assessment, and receive personalised recommendations.</p>
+      </div>
+      <a class="nav_button" href="admin.html">Admin Dashboard</a>
+    </header>
+
+    <section id="loginSection" class="card no-print">
+      <h2>User Login</h2>
+      <label for="loginUsername">Username</label>
+      <input id="loginUsername" type="text" autocomplete="username" placeholder="Enter your username" />
+      <label for="loginPassword">Password</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter your password" />
+      <button id="userLoginBtn">Login</button>
+      <p id="userLoginMessage" class="error"></p>
+    </section>
+
+    <section id="resetPasswordSection" class="card hidden no-print">
+      <h2>Reset Your Password</h2>
+      <p>Your account requires a new password before you can start the assessment.</p>
+      <label for="newPassword">New password</label>
+      <input id="newPassword" type="password" autocomplete="new-password" placeholder="Enter a new password" />
+      <label for="confirmPassword">Confirm new password</label>
+      <input id="confirmPassword" type="password" autocomplete="new-password" placeholder="Re-enter your new password" />
+      <button id="resetPasswordBtn">Save New Password</button>
+      <p id="resetPasswordMessage" class="error"></p>
+    </section>
+
+    <section id="intro" class="card hidden no-print">
+      <h2 id="welcomeText"></h2>
+      <p>You are logged in. Click below when you are ready to begin.</p>
+      <button id="startBtn">Start Assessment</button>
+      <button id="logoutBtn" class="secondary">Logout</button>
+    </section>
+
+    <section id="quiz" class="card hidden no-print">
+      <p id="progress"></p>
+      <h2 id="questionText"></h2>
+      <div id="answers"></div>
+      <button id="nextBtn" disabled>Next</button>
+    </section>
+
+    <section id="results" class="card hidden">
+      <h2 id="resultTitle"></h2>
+      <p id="scoreText"></p>
+      <div id="categoryBreakdown"></div>
+      <h3>Personalised Recommendations</h3>
+      <div id="recommendations"></div>
+      <h3>Question Review</h3>
+      <div id="answerReview"></div>
+      <div class="no-print">
+        <button id="restartBtn">Start Again</button>
+        <button id="downloadPdfBtn">Download Results as PDF</button>
+        <button id="logoutBtnResults" class="secondary">Logout</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="supabase-client.js"></script>
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
