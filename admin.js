@@ -343,3 +343,14 @@ async function logoutAdmin() {
   await sb.auth.signOut();
   location.reload();
 }
+
+document.getElementById("backLink").addEventListener("click", async (e) => {
+
+    e.preventDefault();
+
+    // LOG OUT ADMIN
+    await supabase.auth.signOut();
+
+    // RETURN TO ASSESSMENT
+    window.location.href = "index.html";
+});
