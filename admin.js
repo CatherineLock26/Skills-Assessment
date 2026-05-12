@@ -123,10 +123,32 @@ async function loadAttempts() {
 }
 
 function renderStats() {
+  
   const userCount = cachedUsers.filter(u => u.role === "user").length;
-  const attemptCount = cachedAttempts.length;
+  const attemptCount = cachedAttempts.length; //total attempted assessments
   const avg = attemptCount ? Math.round(cachedAttempts.reduce((sum, a) => sum + Number(a.percentage || 0), 0) / attemptCount) : 0;
-  adminSummary.innerHTML = `<div class="stats-grid"><div><strong>${userCount}</strong><br>Users</div><div><strong>${attemptCount}</strong><br>Attempts</div><div><strong>${avg}%</strong><br>Average Score</div></div>`;
+  //how many users need password reset
+  const passreset = 0;
+  //level counts = how many users at each level
+  
+  //group counts = total number of groups
+  
+  //Active users = status of user
+
+  adminSummary.innerHTML = `
+  <div class="stats-grid">
+    <div>Users: <strong>${userCount}</strong></div>
+    <div>Attempts: <strong>${attemptCount}</strong></div>
+    <div>Average Score<strong>${avg}%</strong></div>
+    <div>Users needing password reset<strong>${passreset}%</strong></div>
+    <div>Total groups/courses:</div>
+    <div>Total assessments completed:</div>
+    <div>Overall average score:</div>
+    <div>Beginner: </div>
+    <div>Developing: </div>
+    <div>Proficient: </div>
+    <div>Advanced: </div>
+  </div>`;
 
   const groups = {};
   cachedAttempts.forEach(a => {
@@ -135,7 +157,8 @@ function renderStats() {
     groups[group].attempts++;
     groups[group].total += Number(a.percentage || 0);
   });
-  groupStatsTable.innerHTML = table(["Group/Course", "Attempts", "Average"], Object.entries(groups).map(([g, v]) => [g, v.attempts, `${Math.round(v.total / v.attempts)}%`]));
+  groupStatsTable.innerHTML = 
+    table(["Group/Course", "Attempts", "Average"], Object.entries(groups).map(([g, v]) => [g, v.attempts, `${Math.round(v.total / v.attempts)}%`]));
 }
 
 function renderUserSelect() {
