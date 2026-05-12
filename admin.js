@@ -159,6 +159,7 @@ function renderStats() {
   });
   groupStatsTable.innerHTML = 
     table(["Group/Course", "Attempts", "Average"], Object.entries(groups).map(([g, v]) => [g, v.attempts, `${Math.round(v.total / v.attempts)}%`]));
+    //table that takes groups.map properties and displays them. Add other group stats here.
 }
 
 function renderUserSelect() {
